@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Résultats du Concours National D'entrée aux Ecoles D'ingénieurs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #e9f0f5 0%, #d9e2ec 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+
+        /* Carte principale */
+        .container {
+            max-width: 950px;
+            width: 100%;
+            margin: 2rem auto;
+        }
+
+        /* Styles pour la boîte de connexion */
+        .login-card, .result-card {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .card-header {
+            background: #0b2b40;
+            padding: 1.6rem 2rem;
+            color: white;
+        }
+
+        .card-header h2 {
+            font-weight: 600;
+            font-size: 1.7rem;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-header p {
+            opacity: 0.85;
+            margin-top: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .card-body {
+            padding: 2rem 2rem 2.2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.6rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: #1a4b6e;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            font-size: 1rem;
+            border: 1.5px solid #cfdfed;
+            border-radius: 1.2rem;
+            background: #fefefe;
+            transition: 0.2s;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #0f6b8c;
+            box-shadow: 0 0 0 3px rgba(15, 107, 140, 0.2);
+        }
+
+        .btn-login {
+            background: #0f6b8c;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 0.9rem;
+            font-size: 1.05rem;
+            font-weight: bold;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        .btn-login:hover {
+            background: #0a4f69;
+            transform: scale(0.98);
+        }
+
+        .error-msg {
+            background: #ffe6e5;
+            color: #b13e3e;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            text-align: center;
+            border-left: 4px solid #b13e3e;
+        }
+
+        /* Carte résultat inspirée de la photo */
+        .result-header {
+            background: #f4f9fe;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #cbdde9;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+
+        .concours-badge {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #0b2b40;
+        }
+
+        .candidat-id {
+            color: #2c6979;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .admis-banner {
+            background: #e1f5e8;
+            color: #1f7840;
+            padding: 0.4rem 1rem;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .info-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px dashed #d4e0e8;
+            padding-bottom: 1rem;
+        }
+
+        .info-label {
+            width: 180px;
+            font-weight: 600;
+            color: #2c3e4e;
+        }
+
+        .info-value {
+            flex: 1;
+            color: #1e2f3a;
+            font-weight: 500;
+        }
+
+        .scores-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 1.5rem 0 1rem;
+            background: #fafcfd;
+            padding: 1.2rem;
+            border-radius: 1.2rem;
+        }
+
+        .score-item {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .score-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #5c7f8c;
+        }
+
+        .score-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0b2b40;
+            line-height: 1.2;
+        }
+
+        .note-bonus {
+            font-size: 0.8rem;
+            color: #2f855a;
+            margin-top: 0.25rem;
+        }
+
+        .classement-row {
+            background: #eef3f7;
+            border-radius: 1rem;
+            padding: 0.8rem 1.2rem;
+            margin: 0.8rem 0 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .classement-badge {
+            font-weight: 700;
+        }
+
+        .footer-note {
+            margin-top: 1.8rem;
+            background: #fef5e7;
+            padding: 1rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            color: #866e3e;
+            border-left: 4px solid #e6bc7e;
+        }
+
+        .click-link {
+            color: #0f6b8c;
+            font-weight: bold;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .click-link:hover {
+            color: #0a4f69;
+        }
+
+        .btn-back {
+            background: none;
+            border: 1.5px solid #0f6b8c;
+            color: #0f6b8c;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn-back:hover {
+            background: #eef4f8;
+        }
+
+        hr {
+            margin: 0.8rem 0;
+            border-color: #e2edf2;
+        }
+
+        /* Styles pour le modal de la fiche de notes */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 1.5rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            animation: modalFadeIn 0.2s ease;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            background: #0b2b40;
+            color: white;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 1.5rem 1.5rem 0 0;
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .notes-card-modal {
+            padding: 1.5rem;
+        }
+        .republique {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #4a5b66;
+            text-align: center;
+        }
+        .ministere {
+            font-weight: 600;
+            color: #0b2b40;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .notes-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1f5e3a;
+            margin: 0.5rem 0;
+            text-align: center;
+        }
+        .session-badge {
+            text-align: center;
+            background: #eef3f7;
+            display: inline-block;
+            width: 100%;
+            padding: 0.3rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .info-note {
+            background: #fef9ef;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin: 1rem 0;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        .info-note p {
+            margin: 0.4rem 0;
+        }
+        .notes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0;
+        }
+        .notes-table th, .notes-table td {
+            border: 1px solid #d4dce4;
+            padding: 0.7rem;
+            text-align: left;
+        }
+        .notes-table th {
+            background: #eef2f5;
+            font-weight: 700;
+            color: #1a4b6e;
+        }
+        .notes-table td {
+            color: #1e2f3a;
+        }
+        .signature {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            text-align: right;
+            font-size: 0.8rem;
+            color: #6c7e8c;
+            border-top: 1px dashed #ccc;
+        }
+        .nb-officiel {
+            background: #fef0e0;
+            padding: 0.7rem;
+            border-radius: 0.8rem;
+            font-size: 0.75rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .card-body {
+                padding: 1.5rem;
+            }
+            .info-label {
+                width: 100%;
+                margin-bottom: 0.3rem;
+            }
+            .scores-grid {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <!-- Vue dynamique : soit login, soit résultats -->
+    <div v-if="!isLoggedIn">
+        <div class="login-card">
+            <div class="card-header">
+                <h2>🏫 Résultats du Concours National D'entrée aux Ecoles D'ingénieurs</h2>
+                <p>Accès sécurisé · Résultats individuels</p>
+            </div>
+            <div class="card-body">
+                <div class="input-group">
+                    <label>📇 N° CIN </label>
+                    <input type="text" v-model="loginForm.cin" placeholder="Ex: 14035348" @keyup.enter="handleLogin">
+                </div>
+                <div class="input-group">
+                    <label>🔐 Mot de passe (N° identifiant candidat)</label>
+                    <input type="password" v-model="loginForm.password" placeholder="Numéro d'identifiant" @keyup.enter="handleLogin">
+                </div>
+                <button class="btn-login" @click="handleLogin">🔍 Consulter mes résultats</button>
+                <div v-if="errorMessage" class="error-msg">
+                    ⚠️ {{ errorMessage }}
+                </div>
+                <div style="font-size:0.75rem; text-align:center; margin-top:1.2rem; color:#6a8e9e;">
+                    Identifiant = numéro CIN · Mot de passe = identifiant unique (ex: 265110510)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-else>
+        <div class="result-card">
+            <!-- En-tête comme sur la photo : Admis(e) + détails -->
+            <div class="result-header">
+                <div>
+                    <div class="concours-badge">🎓  Résultats du Concours National D'entrée aux Ecoles D'ingénieurs</div>
+                    <div class="candidat-id">Candidat : {{ currentCandidate.numeroCandidat || '515006' }}</div>
+                </div>
+                <div class="admis-banner" v-if="currentCandidate.admis">✅ Admis(e)</div>
+                <div class="admis-banner" v-else style="background:#fee2e2; color:#aa3e3e;">❌ Non retenu(e)</div>
+            </div>
+
+            <div class="card-body">
+                <!-- Identité et établissement style photo -->
+                <div class="info-row">
+                    <div class="info-label">Nom & Prénom</div>
+                    <div class="info-value"><strong>{{ currentCandidate.nomPrenom }}</strong></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">N° CIN </div>
+                    <div class="info-value">{{ currentCandidate.cin }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Établissement d’origine</div>
+                    <div class="info-value">{{ currentCandidate.etablissementOrigine }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Centre d’examen</div>
+                    <div class="info-value">{{ currentCandidate.centreExamen }}</div>
+                </div>
+
+                <!-- Scores : Classement et score, comme affiché sur l'image -->
+                <div class="scores-grid">
+                    <div class="score-item">
+                        <div class="score-label">🏅 Classement</div>
+                        <div class="score-number">{{ currentCandidate.classement }}</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">📊 Score</div>
+                        <div class="score-number">{{ currentCandidate.score }}</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">✨ Classement avec bonification</div>
+                        <div class="score-number">{{ currentCandidate.classementBonus }}</div>
+                        <div class="note-bonus">+ bonus intégré</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">📈 Score avec bonification</div>
+                        <div class="score-number">{{ currentCandidate.scoreBonus }}</div>
+                    </div>
+                </div>
+
+                <!-- Détails complémentaires style fiche de choix -->
+                <div class="classement-row">
+                    <span><strong>🔢 N° identifiant candidat :</strong> {{ currentCandidate.numeroIdentifiant }}</span>
+                    <span><strong>📋 Rang global :</strong> {{ currentCandidate.classement }}</span>
+                </div>
+
+                <div class="footer-note">
+                    <strong>📌 N.B :</strong> Pour remplir la Fiche de choix 
+                    <span class="click-link" @click="showNotesModal">Cliquez ici</span><br>
+                    Le candidat doit choisir <strong>15 filières (établissement)</strong> Du 09/07/2026 16:00:00 au 18/07/2026 13:00:00.
+                </div>
+
+                <button class="btn-back" @click="logout">← Retour à l'accueil</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+<script>
+    // Base de données simulée (conformément à l'image et critères)
+    // Chaque candidat possède: CIN + mot de passe (identifiant = numeroCandidat unique)
+    // Les données reprennent les informations visibles sur la capture + extensions réalistes
+    const candidatesDB = [
+        {
+            // D'après la photo : CIN 15264951, identifiant candidat sur la photo: 265110510
+            cin: "15264951",
+            password: "265110510",
+            numeroCandidat: "515006",
+            nomPrenom: "Mohamed Amine Bouazizi",
+            etablissementOrigine: "Faculté Des Sciences De Monastir",
+            centreExamen: "Faculté Des Sciences De Monastir",
+            classement: "1",
+            score: "0629,87",
+            classementBonus: "1",
+            scoreBonus: "0614,87",
+            admis: true,
+            numeroIdentifiant: "265110510",
+            notes: {
+                 mathematiques: "17,55",
+                    physique: "16,42",
+                    informatique: "14,49",
+                    francais: "12,90",
+                    anglais: "11,75",
+                    systemes: "19,40",
+                    chimieInorg: "16,10",
+                    chimieOrg: "17,29"
+            }
+        },
+        {
+            // Exemple additionnel pour tester d'autres comptes (optionnel)
+            cin: "12345678",
+            password: "987654",
+            numeroCandidat: "987654",
+            nomPrenom: "Mohamed Ali Karray",
+            etablissementOrigine: "IPEIN",
+            centreExamen: "IPEIN",
+            classement: "1024",
+            score: "0289,45",
+            classementBonus: "998",
+            scoreBonus: "0301,20",
+            admis: false,
+            numeroIdentifiant: "987654",
+            notes: {
+                mathematiques: "05,20",
+                physique: "06,30",
+                informatique: "07,15",
+                francais: "08,00",
+                anglais: "09,50",
+                systemes: "07,80",
+                chimieInorg: "06,45",
+                chimieOrg: "08,90"
+            }
+        },
+        {
+            cin: "99887766",
+            password: "112233",
+            numeroCandidat: "112233",
+            nomPrenom: "Syrine Ben Amor",
+            etablissementOrigine: "FACULTE DES SCIENCES DE TUNIS",
+            centreExamen: "IPEIEM",
+            classement: "432",
+            score: "0350,22",
+            classementBonus: "410",
+            scoreBonus: "0372,01",
+            admis: true,
+            numeroIdentifiant: "112233",
+            notes: {
+                mathematiques: "12,30",
+                physique: "11,75",
+                informatique: "13,20",
+                francais: "14,50",
+                anglais: "12,80",
+                systemes: "11,90",
+                chimieInorg: "10,60",
+                chimieOrg: "13,45"
+            }
+        }
+    ];
+
+    new Vue({
+        el: '#app',
+        data: {
+            isLoggedIn: false,
+            currentCandidate: null,
+            loginForm: {
+                cin: '',
+                password: ''
+            },
+            errorMessage: ''
+        },
+        methods: {
+            handleLogin() {
+                this.errorMessage = '';
+                const cinInput = this.loginForm.cin.trim();
+                const passInput = this.loginForm.password.trim();
+
+                if (!cinInput || !passInput) {
+                    this.errorMessage = 'Veuillez saisir le N° CIN et le mot de passe (identifiant).';
+                    return;
+                }
+
+                // Rechercher dans la base simulée
+                const found = candidatesDB.find(candidate => 
+                    candidate.cin === cinInput && candidate.password === passInput
+                );
+
+                if (found) {
+                    this.currentCandidate = { ...found };
+                    this.isLoggedIn = true;
+                    this.errorMessage = '';
+                    // Option: effacer formulaire
+                    this.loginForm.cin = '';
+                    this.loginForm.password = '';
+                } else {
+                    this.errorMessage = 'Accès refusé. Vérifiez votre numéro CIN et votre mot de passe (identifiant candidat).';
+                }
+            },
+            logout() {
+                this.isLoggedIn = false;
+                this.currentCandidate = null;
+                this.loginForm.cin = '';
+                this.loginForm.password = '';
+                this.errorMessage = '';
+            },
+            showNotesModal() {
+                // Récupérer les notes du candidat courant
+                const notes = this.currentCandidate.notes || {
+                    mathematiques: "17,55",
+                    physique: "16,42",
+                    informatique: "14,49",
+                    francais: "12,90",
+                    anglais: "10,75",
+                    systemes: "18,40",
+                    chimieInorg: "16,10",
+                    chimieOrg: "17,29"
+                };
+                
+                // Extraire nom et prénom
+                const nomComplet = this.currentCandidate.nomPrenom || "";
+                const partiesNom = nomComplet.split(' ');
+                const nom = partiesNom[0] || "";
+                const prenom = partiesNom.slice(1).join(' ') || "";
+                
+                // Créer le modal HTML
+                const modalDiv = document.createElement('div');
+                modalDiv.className = 'modal-overlay';
+                modalDiv.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>📋 Fiche de Notes détaillée</h3>
+                            <button class="close-modal">&times;</button>
+                        </div>
+                        <div class="notes-card-modal">
+                            <div class="republique">République Tunisienne</div>
+                            <div class="ministere">Ministère de l’Enseignement Supérieur Et de la Recherche Scientifique</div>
+                            <div class="notes-title">🎓 Fiche de Notes</div>
+                            <div class="session-badge">Concours Physique et Chimie : Session 2025</div>
+                            
+                            <div class="info-note">
+                                <p><strong>Nom:</strong> ${nom}</p>
+                                <p><strong>Prénom:</strong> ${prenom}</p>
+                                <p><strong>Identifiant:</strong> ${this.currentCandidate.numeroIdentifiant || ''}</p>
+                                <p><strong>Numéro de la Carte d’Identité Nationale:</strong> ${this.currentCandidate.cin || ''}</p>
+                                <p><strong>Etablissement d’Origine:</strong> ${this.currentCandidate.etablissementOrigine || ''}</p>
+                                <p><em>Il a passé le Concours Physique et Chimie et il a obtenu les notes suivantes:</em></p>
+                            </div>
+                            
+                            <table class="notes-table">
+                                <thead>
+                                    <tr><th>Épreuves</th><th>Notes</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><strong>MATHEMATIQUES</strong></td><td>${notes.mathematiques} / 20</td></tr>
+                                    <tr><td><strong>PHYSIQUE</strong></td><td>${notes.physique} / 20</td></tr>
+                                    <tr><td><strong>INFORMATIQUE</strong></td><td>${notes.informatique} / 20</td></tr>
+                                    <tr><td><strong>Français</strong></td><td>${notes.francais} / 20</td></tr>
+                                    <tr><td><strong>ANGLAIS</strong></td><td>${notes.anglais} / 20</td></tr>
+                                    <tr><td><strong>SYSTEMES TECHNIQUES AUTOMATISES</strong></td><td>${notes.systemes} / 20</td></tr>
+                                    <tr><td><strong>CHIMIE inorganique</strong></td><td>${notes.chimieInorg} / 20</td></tr>
+                                    <tr><td><strong>CHIMIE organique</strong></td><td>${notes.chimieOrg} / 20</td></tr>
+                                </tbody>
+                            </table>
+                            
+                            <div class="signature">Tunisie Le 10/07/2026</div>
+                            <div class="nb-officiel">
+                                NB: Ce relevé de notes ne remplacera pas le relevé de notes officiel qui sera remis après les résultats définitifs.
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modalDiv);
+                
+                // Fermeture du modal
+                const closeBtn = modalDiv.querySelector('.close-modal');
+                const closeModal = () => modalDiv.remove();
+                closeBtn.addEventListener('click', closeModal);
+                modalDiv.addEventListener('click', (e) => {
+                    if (e.target === modalDiv) closeModal();
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>
